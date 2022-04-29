@@ -1,10 +1,19 @@
 import streamlit as st
 from datetime import datetime,date,time
 import requests
+import pandas as pd
+import numpy as np
 
 st.markdown('''# How much will next taxi fare be?
 ## Input your destination. Let AI answer the question!
 ''')
+
+df = pd.DataFrame(
+     np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
+     columns=['lat', 'lon'])
+
+st.map(df)
+
 
 date_ = st.date_input("Put your date",date(2022,4,29))
 time_ = st.time_input("Put your time",time(11,30))
