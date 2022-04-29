@@ -3,6 +3,8 @@ from datetime import datetime,date,time
 import requests
 import pandas as pd
 import numpy as np
+#from geopy.geocoders import Nominatim
+#from geopandas import gpd
 
 # from streamlit_folium import folium_static
 # import folium
@@ -51,46 +53,51 @@ st.markdown('''# How much will next taxi fare be?
 
 # folium_static(m)
 
+def geocode(address):
+    params = { "q": address, 'format': 'json' }
+    place = requests.get("https://nominatim.openstreetmap.org/search", params=params).json()
+    return place[0]
 
 date_ = st.date_input("Put your date",date(2022,4,29))
 time_ = st.time_input("Put your time",time(11,30))
-pickup_logitude = st.text_input("Put your pickup longitude")
-pickup_latitude = st.text_input("Put your pickup latitude")
-dropoff_logitude = st.text_input("Put your dropoff longitude")
-dropoff_latitude = st.text_input("Put your dropoff latitude")
-# pickup_address = st.text_input('Put your pickup address')
-# dropoff_address = st.text_input('Put your dropoff address')
+# pickup_logitude = st.text_input("Put your pickup longitude")
+# pickup_latitude = st.text_input("Put your pickup latitude")
+# dropoff_logitude = st.text_input("Put your dropoff longitude")
+# dropoff_latitude = st.text_input("Put your dropoff latitude")
+pickup_address = st.text_input('Put your pickup address')
+dropoff_address = st.text_input('Put your dropoff address')
 passenger_count = st.slider("Passenger count",1,9,2)
 
 
 url = 'https://taxifare.lewagon.ai/predict'
 
+params_filled = date_ and time_ and pickup_address and dropoff_address and passenger_count
 
 
-params = {
-    'pickup_datetime':datetime.combine(date_,time_),
-    'pickup_longitude':pickup_logitude,
-    'pickup_latitude':pickup_latitude,
-    'dropoff_longitude':dropoff_logitude,
-    'dropoff_latitude':dropoff_latitude,
-    # 'pickup_address':pickup_address,
-    # 'dropoff_address':dropoff_address,
-    'passenger_count':passenger_count
-}
-
-response = requests.get(url,params=params).json()
-
-st.json(response)
+if params_filled:
+    params_ = {
+            'pickup_datetime':datetime.combine(date_,time_),
+            'pickup_longitude':geocode(pickup_address)['lon'],
+            'pickup_latitude':geocode(pickup_address)['lat'],
+            'dropoff_longitude':geocode(dropoff_address)['lon'],
+            'dropoff_latitude':geocode(dropoff_address)['lat'],
+            'passenger_count':passenger_count
+    }
 
 
-@st.cache
-def get_map_data():
+    response = requests.get(url,params=params_).json()
 
-    return pd.DataFrame(
-            np.array([[int(float(pickup_latitude)),int(float(pickup_logitude))],[int(float(dropoff_latitude)),int(float(dropoff_logitude))]]),
-            columns=['lat', 'lon']
-        )
+    st.json(response)
 
-df = get_map_data()
 
-st.map(df)
+    # @st.cache
+    # def get_map_data():
+
+    #     return pd.DataFrame(
+    #             np.array([[int(float(pickup_latitude)),int(float(pickup_logitude))],[int(float(dropoff_latitude)),int(float(dropoff_logitude))]]),
+    #             columns=['lat', 'lon']
+    #         )
+
+    # df = get_map_data()
+
+    # st.map(df)

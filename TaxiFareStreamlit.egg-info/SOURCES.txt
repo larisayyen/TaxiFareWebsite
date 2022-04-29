@@ -1,3 +1,4 @@
+.DS_Store
 MANIFEST.in
 Makefile
 Procfile
@@ -11,3 +12,5 @@ TaxiFareStreamlit.egg-info/SOURCES.txt
 TaxiFareStreamlit.egg-info/dependency_links.txt
 TaxiFareStreamlit.egg-info/requires.txt
 TaxiFareStreamlit.egg-info/top_level.txt
+data/departements.json
+data/lewagon_cities.csv
