@@ -1,3 +1,7 @@
 streamlit
 datetime
 requests
+pandas
+numpy
+streamlit_folium
+folium
